@@ -121,20 +121,15 @@ def _make_packet_prefix(packet):
 
 
 def _read_packet_length(content, content_index):
-    while get_byte(content, content_index) != 0:
+    while content.decode()[content_index] != ':':
         content_index += 1
-    content_index += 1
-    packet_length_string = ''
-    byte = get_byte(content, content_index)
-    while byte != 255:
-        packet_length_string += str(byte)
-        content_index += 1
-        byte = get_byte(content, content_index)
+    packet_length_string = content.decode()[0:content_index]
+
     return content_index, int(packet_length_string)
 
 
 def _read_packet_text(content, content_index, packet_length):
-    while get_byte(content, content_index) == 255:
+    while content.decode()[content_index] == ':':
         content_index += 1
     packet_text = content[content_index:content_index + packet_length]
     return content_index + packet_length, packet_text
